@@ -1,8 +1,16 @@
-import 'package:flappy_ember/setupscreen.dart';
-import 'package:flutter/material.dart'; // Asegúrate de importar la pantalla de configuración aquí
+import 'package:flappy_ember/appdata.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'setupscreen.dart'; // Asegúrate de tener la ruta correcta
+// Asegúrate de tener la ruta correcta
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => AppData(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -17,4 +25,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

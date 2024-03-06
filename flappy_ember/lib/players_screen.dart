@@ -1,10 +1,13 @@
+import 'package:flappy_ember/appdata.dart';
+import 'package:flappy_ember/game.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+// Asegúrate de importar todas las dependencias necesarias...
 
-// Cambiamos StatelessWidget por StatefulWidget
 class PlayersScreen extends StatefulWidget {
-  final List<dynamic> connectedPlayers;
+  final FlappyEmberGame game;
 
-  PlayersScreen({Key? key, required this.connectedPlayers}) : super(key: key);
+  PlayersScreen({required this.game});
 
   @override
   _PlayersScreenState createState() => _PlayersScreenState();
@@ -13,19 +16,48 @@ class PlayersScreen extends StatefulWidget {
 class _PlayersScreenState extends State<PlayersScreen> {
   @override
   Widget build(BuildContext context) {
+    final appData = Provider.of<AppData>(context);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Jugadores Conectados'),
-      ),
-      body: ListView.builder(
-        itemCount: widget.connectedPlayers.length, // Acceso con widget.connectedPlayers
-        itemBuilder: (context, index) {
-          // Aseguramos el casting a String para evitar errores
-          var playerName = widget.connectedPlayers[index]['name'] as String;
-          return ListTile(
-            title: Text(playerName),
-          );
-        },
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Consumer<AppData>(
+              builder: (context, appData, child) {
+                return ListView.builder(
+                  itemCount: appData.connectedPlayers.length,
+                  itemBuilder: (context, index) {
+                    var playerName =
+                        appData.connectedPlayers[index]['name'] as String;
+                    return Center(
+                      child: ListTile(
+                        title: Text(playerName, textAlign: TextAlign.center),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton.icon(
+              icon: Icon(Icons.exit_to_app),
+              label: Text('Desconectar'),
+              onPressed: () {
+                widget.game.disconnect();
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors
+                    .red, // Define el color del botón aquí si lo necesitas
+                minimumSize: Size(
+                    double.infinity, 50), // Toma el ancho completo disponible
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

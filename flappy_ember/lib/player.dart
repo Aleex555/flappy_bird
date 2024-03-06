@@ -3,17 +3,21 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
 
 class Player extends SpriteAnimationComponent
     with CollisionCallbacks, HasGameRef {
+  Color color =
+      Colors.white; // Color predeterminado del jugador, cambiar según necesites
+
   Player() : super(position: Vector2.all(100), size: Vector2.all(50));
 
   final velocity = Vector2(0, 150);
 
   @override
   Future<void> onLoad() async {
-    animation = SpriteAnimation.fromFrameData(
-      await Flame.images.load('ember.png'),
+    animation = await SpriteAnimation.load(
+      'ember.png',
       SpriteAnimationData.sequenced(
         amount: 4,
         textureSize: Vector2.all(16),
@@ -21,6 +25,17 @@ class Player extends SpriteAnimationComponent
       ),
     );
     add(CircleHitbox());
+  }
+
+  //@override
+  //void render(Canvas canvas) {
+  //final paint = Paint()
+  //..colorFilter = ui.ColorFilter.mode(color, ui.BlendMode.modulate);
+  //super.render(canvas, overridePaint: paint);
+  //}
+
+  void changeColor(Color newColor) {
+    color = newColor;
   }
 
   @override
