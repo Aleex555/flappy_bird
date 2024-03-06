@@ -1,5 +1,6 @@
 // Importaciones necesarias
 import 'dart:convert';
+import 'dart:ui';
 import 'package:flame/collisions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
