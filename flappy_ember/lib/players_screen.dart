@@ -1,13 +1,11 @@
+import 'package:flame/game.dart';
 import 'package:flappy_ember/appdata.dart';
-import 'package:flappy_ember/game.dart';
+import 'package:flappy_ember/game.dart'; // Asegúrate de que este importe apunta a tu juego correctamente
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-// Asegúrate de importar todas las dependencias necesarias...
 
 class PlayersScreen extends StatefulWidget {
-  final FlappyEmberGame game;
-
-  PlayersScreen({required this.game});
+  const PlayersScreen({super.key});
 
   @override
   _PlayersScreenState createState() => _PlayersScreenState();
@@ -16,8 +14,6 @@ class PlayersScreen extends StatefulWidget {
 class _PlayersScreenState extends State<PlayersScreen> {
   @override
   Widget build(BuildContext context) {
-    final appData = Provider.of<AppData>(context);
-
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -41,19 +37,19 @@ class _PlayersScreenState extends State<PlayersScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(8.0),
             child: ElevatedButton.icon(
               icon: Icon(Icons.exit_to_app),
               label: Text('Desconectar'),
               onPressed: () {
-                widget.game.disconnect();
+                final appData = Provider.of<AppData>(context, listen: false);
+                final game = FlappyEmberGame(appData: appData);
+                runApp(GameWidget(game: game));
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors
-                    .red, // Define el color del botón aquí si lo necesitas
-                minimumSize: Size(
-                    double.infinity, 50), // Toma el ancho completo disponible
+                backgroundColor: Colors.red,
+                minimumSize: Size(double.infinity, 50),
               ),
             ),
           ),

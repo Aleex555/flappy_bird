@@ -26,6 +26,8 @@ const port = process.env.PORT || 8888
 const availableColors = ['blau', 'vermell', 'taronja', 'verd'];
 let assignedColors = {};
 let connectedPlayers = [];
+let gameCountdown = null;
+let gameStarted = false;
 
 // Publish static files from 'public' folder
 app.use(express.static('public'))
@@ -51,11 +53,36 @@ function shutDown() {
 ws.init(httpServer, port)
 
 ws.onConnection = (socket, id) => {
+  // Rechazar conexión si ya hay 4 jugadores
+  if (connectedPlayers.length >= 4) {
+    console.log(`Máximo de jugadores alcanzado, rechazando conexión: ${id}`);
+    socket.close(); // O enviar un mensaje antes de cerrar si lo prefieres
+    return;
+  }
+
   if (debug) console.log("WebSocket client connected: " + id);
   const colorIndex = Math.floor(Math.random() * availableColors.length);
   const color = availableColors.splice(colorIndex, 1)[0];
   assignedColors[id] = color;
   connectedPlayers.push({ id: id, name: 'Anónimo', color: color });
+
+  // Cuando el primer jugador se conecta, inicia un contador de 30 segundos
+  if (connectedPlayers.length === 1 && !gameStarted) {
+    gameCountdown = setTimeout(() => {
+      gameStarted = true;
+      ws.broadcast(JSON.stringify({ type: "gameStart" })); // Envía mensaje de inicio de juego
+      console.log("El juego ha comenzado después de 30 segundos de espera!");
+    }, 30000);
+  }
+
+  // Si se conectan 4 jugadores antes de que termine el contador, inicia el juego de inmediato
+  if (connectedPlayers.length === 4 && !gameStarted) {
+    clearTimeout(gameCountdown);
+    gameStarted = true;
+    ws.broadcast(JSON.stringify({ type: "gameStart" })); // Envía mensaje de inicio de juego
+    console.log("El juego ha comenzado con 4 jugadores!");
+  }
+
 
   socket.send(JSON.stringify({
     type: "welcome",
@@ -64,6 +91,7 @@ ws.onConnection = (socket, id) => {
     color: color
   }));
 };
+
 
 ws.onMessage = (socket, id, msg) => {
   if (debug) console.log(`New message from ${id}: ${msg.substring(0, 32)}...`);
@@ -101,6 +129,13 @@ ws.onClose = (socket, id) => {
     delete assignedColors[id]; // Eliminar la entrada del color asignado
   }
 
+  if (connectedPlayers.length === 0 && !gameStarted) {
+    // Si todos los jugadores se han desconectado y el juego no ha comenzado, resetear el estado
+    clearTimeout(gameCountdown);
+    gameCountdown = null;
+    gameStarted = false;
+  }
+
   broadcastConnectedPlayers();
   ws.broadcast(JSON.stringify({
     type: "disconnected",
@@ -111,14 +146,17 @@ ws.onClose = (socket, id) => {
 
 gLoop.init();
 gLoop.run = (fps) => {
-  // Aquest mètode s'intenta executar 30 cops per segon
-  let clientsData = ws.getClientsData()
+  // Este método intenta ejecutarse 30 veces por segundo
+  let clientsData = ws.getClientsData();
 
-  // Gestionar aquí la partida, estats i final
-  //console.log(clientsData)
-
-  // Send game status data to everyone
-  ws.broadcast(JSON.stringify({ type: "data", value: clientsData }))
+  // Crear un arreglo con los datos necesarios de cada cliente
+  let opponentsData = connectedPlayers.map(player => ({
+    id: player.id,
+    x: ws.getClientData(player.id).x || 0,
+    y: ws.getClientData(player.id).y || 0,
+    color: player.color,
+  }));
+  ws.broadcast(JSON.stringify({ type: "data", opponents: opponentsData }));
 }
 
 function broadcastConnectedPlayers() {

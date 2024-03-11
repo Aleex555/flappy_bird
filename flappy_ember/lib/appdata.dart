@@ -1,11 +1,20 @@
+import 'dart:ffi';
+
+import 'package:flame/game.dart';
+import 'package:flappy_ember/game.dart';
 import 'package:flutter/material.dart';
 
-class AppData with ChangeNotifier {
-  // Access appData globaly with:
-  // AppData appData = Provider.of<AppData>(context);
-  // AppData appData = Provider.of<AppData>(context, listen: false)
+enum ConnectionStatus {
+  setupscreen,
+  playersscreen,
+}
 
+class AppData with ChangeNotifier {
   List<dynamic> connectedPlayers = [];
+  String namePlayer = "";
+  bool partida = false;
+  ConnectionStatus connectionStatus = ConnectionStatus.setupscreen;
+
   void forceNotifyListeners() {
     super.notifyListeners();
   }
@@ -13,5 +22,24 @@ class AppData with ChangeNotifier {
   void setUsuarios(List<dynamic> value) {
     connectedPlayers = value;
     notifyListeners();
+  }
+
+  void setNamePlayer(String value) {
+    namePlayer = value;
+    connectionStatus = ConnectionStatus.playersscreen;
+    notifyListeners();
+  }
+
+  String getNamePlayer() {
+    return namePlayer;
+  }
+
+  void setPartida(bool value) {
+    partida = value;
+    notifyListeners();
+  }
+
+  bool getPartida() {
+    return partida;
   }
 }
