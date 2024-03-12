@@ -26,7 +26,6 @@ class AppData with ChangeNotifier {
 
   void setNamePlayer(String value) {
     namePlayer = value;
-    connectionStatus = ConnectionStatus.playersscreen;
     notifyListeners();
   }
 

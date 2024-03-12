@@ -2,8 +2,10 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'package:flame/collisions.dart';
+import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
+import 'package:flame/src/components/core/component.dart';
 import 'package:flappy_ember/appdata.dart';
 import 'package:flappy_ember/box_stack.dart';
 import 'package:flappy_ember/ground.dart';
@@ -15,7 +17,8 @@ import 'package:flutter/material.dart';
 
 class FlappyEmberGame extends FlameGame
     with HasCollisionDetection, TapDetector {
-  FlappyEmberGame({required this.appData}) {
+  Function? onGameStart;
+  FlappyEmberGame() {
     _initializeWebSocket();
   }
 
@@ -27,8 +30,8 @@ class FlappyEmberGame extends FlameGame
   double _timeSinceLastUpdate = 0;
   final double updateInterval = 0.5;
   List<dynamic> connectedPlayers = [];
-  final AppData appData;
   Map<String, Opponent> opponents = {};
+  bool partida = false;
 
   @override
   Future<void> onLoad() async {
@@ -71,7 +74,7 @@ class FlappyEmberGame extends FlameGame
       case 'welcome':
         _webSocketsHandler.sendMessage(jsonEncode({
           'type': 'init',
-          'name': appData.getNamePlayer(),
+          'name': "sghdjfhg",
         }));
         print("Welcome: ${data['value']}");
         String assignedColorHex = data['color'] as String;
@@ -106,16 +109,13 @@ class FlappyEmberGame extends FlameGame
         connectedPlayers = (data['connectedPlayers'] as List)
             .map((e) => e as Map<String, dynamic>)
             .toList();
-        appData.setUsuarios(connectedPlayers);
-        print("Updated Players List: $connectedPlayers");
 
-        // Actualizar los oponentes basándose en la lista de jugadores conectados
+        print("Updated Players List: $connectedPlayers");
         for (var playerData in connectedPlayers) {
           final id = playerData['id'].toString();
-          if (id == _webSocketsHandler.mySocketId) continue;
+          if (id != _webSocketsHandler.mySocketId) continue;
           final colorName = playerData['color'] as String;
-          final color = _colorFromName(colorName) ??
-              Colors.grey; // Convertir nombre de color a objeto Color
+          final color = _colorFromName(colorName) ?? Colors.grey;
 
           if (!opponents.containsKey(id)) {
             // Crea el oponente si no existe
@@ -138,10 +138,10 @@ class FlappyEmberGame extends FlameGame
 
         break;
       case "gameStart":
-        appData.setPartida(true);
+        onGameStart?.call();
+        partida = true;
+        print(partida);
         break;
-
-      // Añade más casos según necesites
     }
   }
 

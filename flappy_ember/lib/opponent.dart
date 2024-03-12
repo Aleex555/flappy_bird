@@ -13,7 +13,7 @@ class Opponent extends SpriteAnimationComponent {
   Future<void> onLoad() async {
     String imagePath = _getImagePathForColor(color);
     animation = await SpriteAnimation.load(
-      'ember.png',
+      'embervermell.png',
       SpriteAnimationData.sequenced(
         amount: 4,
         textureSize: Vector2.all(16),

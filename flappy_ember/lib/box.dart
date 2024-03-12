@@ -11,8 +11,24 @@ class Box extends SpriteComponent with HasGameRef<FlappyEmberGame> {
 
   @override
   Future<void> onLoad() async {
-    final boxImage = await Flame.images.load('boxes/1.png');
-    sprite = Sprite(boxImage);
+    int retryCount = 0;
+    bool assetLoaded = false;
+
+    while (!assetLoaded) {
+      try {
+        final boxImage = await Flame.images.load('1.png');
+        sprite = Sprite(boxImage);
+        assetLoaded = true;
+      } catch (e) {
+        print('Error loading assets');
+        retryCount++;
+        await Future.delayed(const Duration(milliseconds: 500));
+      }
+    }
+    if (!assetLoaded) {
+      print('Failed to load asset after $retryCount attempts');
+    }
+
     add(RectangleHitbox());
   }
 }

@@ -42,9 +42,6 @@ class _PlayersScreenState extends State<PlayersScreen> {
               icon: Icon(Icons.exit_to_app),
               label: Text('Desconectar'),
               onPressed: () {
-                final appData = Provider.of<AppData>(context, listen: false);
-                final game = FlappyEmberGame(appData: appData);
-                runApp(GameWidget(game: game));
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(

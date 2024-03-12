@@ -70,16 +70,16 @@ ws.onConnection = (socket, id) => {
   if (connectedPlayers.length === 1 && !gameStarted) {
     gameCountdown = setTimeout(() => {
       gameStarted = true;
-      ws.broadcast(JSON.stringify({ type: "gameStart" })); // Envía mensaje de inicio de juego
+      ws.broadcast(JSON.stringify({ type: "gameStart" }));
       console.log("El juego ha comenzado después de 30 segundos de espera!");
-    }, 30000);
+    }, 10000);
   }
 
   // Si se conectan 4 jugadores antes de que termine el contador, inicia el juego de inmediato
   if (connectedPlayers.length === 4 && !gameStarted) {
     clearTimeout(gameCountdown);
     gameStarted = true;
-    ws.broadcast(JSON.stringify({ type: "gameStart" })); // Envía mensaje de inicio de juego
+    ws.broadcast(JSON.stringify({ type: "gameStart" }));
     console.log("El juego ha comenzado con 4 jugadores!");
   }
 
@@ -105,15 +105,15 @@ ws.onMessage = (socket, id, msg) => {
       const playerIndex = connectedPlayers.findIndex(player => player.id === id);
       if (playerIndex !== -1) {
         connectedPlayers[playerIndex].name = obj.name;
-
       }
+      broadcastConnectedPlayers();
       break;
     case "move":
       clientData.x = obj.x;
       clientData.y = obj.y;
       break;
   }
-  broadcastConnectedPlayers();
+  
 };
 
 

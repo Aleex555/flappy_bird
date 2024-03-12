@@ -22,6 +22,10 @@ class _SetupScreenState extends State<SetupScreen> {
     final name = _nameController.text;
     final appData = Provider.of<AppData>(context, listen: false);
     appData.setNamePlayer(name);
+    FlappyEmberGame game = FlappyEmberGame();
+    game.onGameStart = () {
+      runApp(GameWidget(game: game));
+    };
   }
 
   @override
