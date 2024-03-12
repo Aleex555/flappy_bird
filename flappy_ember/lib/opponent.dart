@@ -20,7 +20,6 @@ class Opponent extends SpriteAnimationComponent {
         stepTime: 0.12,
       ),
     );
-    add(CircleHitbox());
   }
 
   String _getImagePathForColor(Color color) {

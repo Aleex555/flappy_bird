@@ -146,17 +146,8 @@ ws.onClose = (socket, id) => {
 
 gLoop.init();
 gLoop.run = (fps) => {
-  // Este método intenta ejecutarse 30 veces por segundo
   let clientsData = ws.getClientsData();
-
-  // Crear un arreglo con los datos necesarios de cada cliente
-  let opponentsData = connectedPlayers.map(player => ({
-    id: player.id,
-    x: ws.getClientData(player.id).x || 0,
-    y: ws.getClientData(player.id).y || 0,
-    color: player.color,
-  }));
-  ws.broadcast(JSON.stringify({ type: "data", opponents: opponentsData }));
+  ws.broadcast(JSON.stringify({ type: "data", opponents: clientsData }));
 }
 
 function broadcastConnectedPlayers() {

@@ -31,7 +31,6 @@ class FlappyEmberGame extends FlameGame
   final double updateInterval = 0.5;
   List<dynamic> connectedPlayers = [];
   Map<String, Opponent> opponents = {};
-  bool partida = false;
 
   @override
   Future<void> onLoad() async {
@@ -90,18 +89,32 @@ class FlappyEmberGame extends FlameGame
         }
         // Cambiar el color del jugador
         _player.changeColor(assignedColor);
+        _webSocketsHandler.mySocketId = data['id'].toString();
         break;
       case 'data':
-        // Asume que 'data' contiene la información de todos los oponentes
         List<dynamic> opponentsData = data['opponents'] as List<dynamic>;
         for (var oppData in opponentsData) {
           final id = oppData['id'];
+
           if (id == _webSocketsHandler.mySocketId) continue;
           if (opponents.containsKey(id)) {
+            print(_webSocketsHandler.mySocketId);
+            print(id);
+            print(id == _webSocketsHandler.mySocketId);
             final opponent = opponents[id]!;
-            final x = double.parse(oppData['x'].toString());
-            final y = double.parse(oppData['y'].toString());
-            opponent.position = Vector2(x, y);
+            double? clientX = -100.0;
+            double? clientY = -100.0;
+            var x = oppData['x'];
+            if (x != null) {
+              clientX =
+                  (x is num) ? x.toDouble() : double.tryParse(x.toString());
+            }
+            var y = oppData['y'];
+            if (y != null) {
+              clientY =
+                  (y is num) ? y.toDouble() : double.tryParse(y.toString());
+            }
+            opponent.position = Vector2(clientX!, clientY!);
           }
         }
         break;
@@ -113,12 +126,11 @@ class FlappyEmberGame extends FlameGame
         print("Updated Players List: $connectedPlayers");
         for (var playerData in connectedPlayers) {
           final id = playerData['id'].toString();
-          if (id != _webSocketsHandler.mySocketId) continue;
+          if (id == _webSocketsHandler.mySocketId) continue;
           final colorName = playerData['color'] as String;
           final color = _colorFromName(colorName) ?? Colors.grey;
 
           if (!opponents.containsKey(id)) {
-            // Crea el oponente si no existe
             final newOpponent = Opponent(id: id, color: color)
               ..position = Vector2(0, 0);
             opponents[id] = newOpponent;
@@ -139,8 +151,6 @@ class FlappyEmberGame extends FlameGame
         break;
       case "gameStart":
         onGameStart?.call();
-        partida = true;
-        print(partida);
         break;
     }
   }

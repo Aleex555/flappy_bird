@@ -66,7 +66,6 @@ class Player extends SpriteAnimationComponent
   @override
   void onCollisionStart(Set<Vector2> _, PositionComponent other) {
     super.onCollisionStart(_, other);
-    gameRef.pauseEngine();
   }
 
   void fly() {
