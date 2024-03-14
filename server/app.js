@@ -72,7 +72,7 @@ ws.onConnection = (socket, id) => {
       gameStarted = true;
       ws.broadcast(JSON.stringify({ type: "gameStart" }));
       console.log("El juego ha comenzado después de 30 segundos de espera!");
-    }, 10000);
+    }, 15000);
   }
 
   // Si se conectan 4 jugadores antes de que termine el contador, inicia el juego de inmediato
@@ -121,16 +121,13 @@ ws.onClose = (socket, id) => {
   if (debug) console.log("WebSocket client disconnected: " + id);
   connectedPlayers = connectedPlayers.filter(player => player.id !== id);
 
-
-
-  // Liberar el color asignado al cliente desconectado
   if (assignedColors[id]) {
     availableColors.push(assignedColors[id]); // Añadir el color de nuevo a la lista de disponibles
     delete assignedColors[id]; // Eliminar la entrada del color asignado
   }
 
-  if (connectedPlayers.length === 0 && !gameStarted) {
-    // Si todos los jugadores se han desconectado y el juego no ha comenzado, resetear el estado
+  if (connectedPlayers.length === 0) {
+    console.log("aqui");
     clearTimeout(gameCountdown);
     gameCountdown = null;
     gameStarted = false;

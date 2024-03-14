@@ -14,6 +14,7 @@ import 'package:flappy_ember/player.dart';
 import 'package:flappy_ember/sky.dart';
 import 'package:flappy_ember/websockets_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FlappyEmberGame extends FlameGame
     with HasCollisionDetection, TapDetector {
@@ -31,6 +32,7 @@ class FlappyEmberGame extends FlameGame
   final double updateInterval = 0.5;
   List<dynamic> connectedPlayers = [];
   Map<String, Opponent> opponents = {};
+  Function(List<dynamic> connectedPlayers)? onPlayersUpdated;
 
   @override
   Future<void> onLoad() async {
@@ -53,11 +55,16 @@ class FlappyEmberGame extends FlameGame
       add(BoxStack());
       _timeSinceBox = 0;
     }
-    // Envía la posición del jugador al servidor cada updateInterval segundos
-    _timeSinceLastUpdate += dt;
-    if (_timeSinceLastUpdate >= updateInterval) {
-      _sendPlayerPosition();
-      _timeSinceLastUpdate = 0;
+    if (_player.perdido == false) {
+      _timeSinceLastUpdate += dt;
+      if (_timeSinceLastUpdate >= updateInterval) {
+        _sendPlayerPosition();
+        _timeSinceLastUpdate = 0;
+      }
+    } else {
+      _sendPlayerLose();
+      connectedPlayers.removeWhere(
+          (player) => player['id'] == _webSocketsHandler.mySocketId);
     }
   }
 
@@ -98,9 +105,6 @@ class FlappyEmberGame extends FlameGame
 
           if (id == _webSocketsHandler.mySocketId) continue;
           if (opponents.containsKey(id)) {
-            print(_webSocketsHandler.mySocketId);
-            print(id);
-            print(id == _webSocketsHandler.mySocketId);
             final opponent = opponents[id]!;
             double? clientX = -100.0;
             double? clientY = -100.0;
@@ -122,6 +126,7 @@ class FlappyEmberGame extends FlameGame
         connectedPlayers = (data['connectedPlayers'] as List)
             .map((e) => e as Map<String, dynamic>)
             .toList();
+        onPlayersUpdated?.call(connectedPlayers);
 
         print("Updated Players List: $connectedPlayers");
         for (var playerData in connectedPlayers) {
@@ -152,6 +157,9 @@ class FlappyEmberGame extends FlameGame
       case "gameStart":
         onGameStart?.call();
         break;
+
+      case "ranking":
+        break;
     }
   }
 
@@ -159,7 +167,7 @@ class FlappyEmberGame extends FlameGame
     switch (name) {
       case 'vermell':
         return Colors.red;
-      case 'verd  ':
+      case 'verd':
         return Colors.green;
       case 'taronja':
         return Colors.orange;
@@ -178,13 +186,18 @@ class FlappyEmberGame extends FlameGame
     }));
   }
 
+  void _sendPlayerLose() {
+    _webSocketsHandler.sendMessage(
+        jsonEncode({'type': 'perdido', 'id': _webSocketsHandler.mySocketId}));
+  }
+
   void disconnect() {
     _webSocketsHandler.disconnectFromServer();
   }
 
   @override
   void onRemove() {
-    _webSocketsHandler.disconnectFromServer();
     super.onRemove();
+    print("Player ha sido eliminado.");
   }
 }

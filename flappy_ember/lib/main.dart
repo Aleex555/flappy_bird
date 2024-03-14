@@ -1,15 +1,21 @@
-import 'package:flappy_ember/app.dart';
-import 'package:flappy_ember/appdata.dart';
+import 'package:flappy_ember/setupscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'setupscreen.dart'; // Asegúrate de tener la ruta correcta
-// Asegúrate de tener la ruta correcta
+import 'package:flappy_ember/appdata.dart';
 
 void main() {
   runApp(
     ChangeNotifierProvider(
       create: (context) => AppData(),
-      child: const App(),
+      child: MaterialApp(
+        title: 'Flappy Ember',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home:
+            SetupScreen(), // Directamente usando SetupScreen como pantalla de inicio.
+      ),
     ),
   );
 }

@@ -32,13 +32,4 @@ class AppData with ChangeNotifier {
   String getNamePlayer() {
     return namePlayer;
   }
-
-  void setPartida(bool value) {
-    partida = value;
-    notifyListeners();
-  }
-
-  bool getPartida() {
-    return partida;
-  }
 }
