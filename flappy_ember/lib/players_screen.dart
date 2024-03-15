@@ -1,6 +1,7 @@
 import 'package:flame/game.dart';
 import 'package:flappy_ember/appdata.dart';
 import 'package:flappy_ember/game.dart';
+import 'package:flappy_ember/ranking.dart';
 import 'package:flappy_ember/setupscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +21,12 @@ class _PlayersScreenState extends State<PlayersScreen> {
     super.initState();
     widget.game.onPlayersUpdated = _updateConnectedPlayers;
     widget.game.onGameStart = () {
-      runApp(GameWidget(game: widget.game));
+      runApp(GameWidget(
+        game: widget.game,
+        overlayBuilderMap: {
+          'rankingOverlay': (context, _) => RankingScreen(game: widget.game)
+        },
+      ));
     };
   }
 

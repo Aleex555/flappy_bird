@@ -11,6 +11,7 @@ enum ConnectionStatus {
 
 class AppData with ChangeNotifier {
   List<dynamic> connectedPlayers = [];
+  List<dynamic> lostPlayers = [];
   String namePlayer = "";
   bool partida = false;
   ConnectionStatus connectionStatus = ConnectionStatus.setupscreen;
@@ -21,6 +22,11 @@ class AppData with ChangeNotifier {
 
   void setUsuarios(List<dynamic> value) {
     connectedPlayers = value;
+    notifyListeners();
+  }
+
+  void setUsuarioslost(List<dynamic> value) {
+    lostPlayers = value;
     notifyListeners();
   }
 

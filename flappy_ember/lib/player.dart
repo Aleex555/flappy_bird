@@ -7,11 +7,9 @@ import 'dart:ui' as ui;
 
 class Player extends SpriteAnimationComponent
     with CollisionCallbacks, HasGameRef {
-  final Function onLose;
   Color color = Colors.white;
 
-  Player({required this.onLose})
-      : super(position: Vector2.all(100), size: Vector2.all(50));
+  Player() : super(position: Vector2.all(100), size: Vector2.all(50));
 
   final velocity = Vector2(0, 150);
   bool perdido = false;
@@ -84,5 +82,9 @@ class Player extends SpriteAnimationComponent
         ),
       ),
     );
+  }
+
+  void onLose() {
+    gameRef.overlays.add('rankingOverlay');
   }
 }

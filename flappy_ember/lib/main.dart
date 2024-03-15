@@ -13,8 +13,7 @@ void main() {
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home:
-            SetupScreen(), // Directamente usando SetupScreen como pantalla de inicio.
+        home: SetupScreen(),
       ),
     ),
   );

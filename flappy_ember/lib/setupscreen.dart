@@ -24,6 +24,7 @@ class _SetupScreenState extends State<SetupScreen> {
     appData.setNamePlayer(name);
 
     FlappyEmberGame game = FlappyEmberGame();
+    game.name = name;
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => PlayersScreen(game: game)),

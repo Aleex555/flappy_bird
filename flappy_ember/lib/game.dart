@@ -11,6 +11,7 @@ import 'package:flappy_ember/box_stack.dart';
 import 'package:flappy_ember/ground.dart';
 import 'package:flappy_ember/opponent.dart';
 import 'package:flappy_ember/player.dart';
+import 'package:flappy_ember/ranking.dart';
 import 'package:flappy_ember/sky.dart';
 import 'package:flappy_ember/websockets_handler.dart';
 import 'package:flutter/material.dart';
@@ -31,8 +32,11 @@ class FlappyEmberGame extends FlameGame
   double _timeSinceLastUpdate = 0;
   final double updateInterval = 0.5;
   List<dynamic> connectedPlayers = [];
+  List<dynamic> lostPlayers = [];
   Map<String, Opponent> opponents = {};
   Function(List<dynamic> connectedPlayers)? onPlayersUpdated;
+  Function(List<dynamic> lostPlayers)? onPlayersUpdatedlost;
+  late String name;
 
   @override
   Future<void> onLoad() async {
@@ -80,7 +84,7 @@ class FlappyEmberGame extends FlameGame
       case 'welcome':
         _webSocketsHandler.sendMessage(jsonEncode({
           'type': 'init',
-          'name': "sghdjfhg",
+          'name': name,
         }));
         print("Welcome: ${data['value']}");
         String assignedColorHex = data['color'] as String;
@@ -158,7 +162,11 @@ class FlappyEmberGame extends FlameGame
         onGameStart?.call();
         break;
 
-      case "ranking":
+      case "playerLostUpdate":
+        lostPlayers = (data['lost'] as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+        onPlayersUpdatedlost?.call(lostPlayers);
         break;
     }
   }
@@ -187,8 +195,11 @@ class FlappyEmberGame extends FlameGame
   }
 
   void _sendPlayerLose() {
-    _webSocketsHandler.sendMessage(
-        jsonEncode({'type': 'perdido', 'id': _webSocketsHandler.mySocketId}));
+    _webSocketsHandler.sendMessage(jsonEncode({
+      'type': 'perdido',
+      'id': _webSocketsHandler.mySocketId,
+      'name': name
+    }));
   }
 
   void disconnect() {
