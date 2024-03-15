@@ -21,13 +21,18 @@ class _PlayersScreenState extends State<PlayersScreen> {
     super.initState();
     widget.game.onPlayersUpdated = _updateConnectedPlayers;
     widget.game.onGameStart = () {
-      runApp(GameWidget(
+  Navigator.of(context).pushReplacement(
+    MaterialPageRoute(
+      builder: (context) => GameWidget(
         game: widget.game,
         overlayBuilderMap: {
-          'rankingOverlay': (context, _) => RankingScreen(game: widget.game)
+          'rankingOverlay': (context, _) => RankingScreen(game: widget.game),
         },
-      ));
-    };
+      ),
+    ),
+  );
+};
+
   }
 
   @override
@@ -122,8 +127,11 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   void _updateConnectedPlayers(List<dynamic> connectedPlayers) {
+  if (mounted) {
     Provider.of<AppData>(context, listen: false).setUsuarios(connectedPlayers);
   }
+}
+
 
   Color? _colorFromName(String name) {
     switch (name) {

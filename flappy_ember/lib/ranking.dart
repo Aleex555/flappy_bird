@@ -21,8 +21,7 @@ class _RankingScreenState extends State<RankingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Aquí obtenemos la lista de jugadores perdidos desde AppData
-    List<Map<String, dynamic>> playersList =
+    List playersList =
         Provider.of<AppData>(context).lostPlayers;
 
     return Scaffold(
@@ -31,7 +30,7 @@ class _RankingScreenState extends State<RankingScreen> {
         separatorBuilder: (context, index) => Divider(color: Colors.grey),
         itemBuilder: (BuildContext context, int index) {
           final player = playersList[index];
-          return _buildPlayerTile(player, index);
+          return _buildPlayerTile(player as Map<String, dynamic> , index);
         },
       ),
     );
@@ -67,7 +66,7 @@ class _RankingScreenState extends State<RankingScreen> {
         color: Colors.black54,
       ),
       title: Text(
-        'Jugador ${player['id']}',
+        'Jugador ${player['name']}',
         style: TextStyle(fontWeight: FontWeight.bold),
       ),
       subtitle: Text('Posición: ${player['position']}'),

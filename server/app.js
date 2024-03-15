@@ -141,6 +141,7 @@
   ws.onClose = (socket, id) => {
     if (debug) console.log("WebSocket client disconnected: " + id);
     connectedPlayers = connectedPlayers.filter(player => player.id !== id);
+    playersLost = playersLost.filter(player => player.id !== id);
 
     if (assignedColors[id]) {
       availableColors.push(assignedColors[id]); // Añadir el color de nuevo a la lista de disponibles
