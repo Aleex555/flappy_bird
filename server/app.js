@@ -68,13 +68,18 @@
     assignedColors[id] = color;
     connectedPlayers.push({ id: id, name: 'Anónimo', color: color });
 
-    // Cuando el primer jugador se conecta, inicia un contador de 30 segundos
     if (connectedPlayers.length === 1 && !gameStarted) {
-      gameCountdown = setTimeout(() => {
-        gameStarted = true;
-        ws.broadcast(JSON.stringify({ type: "gameStart" }));
-        console.log("El juego ha comenzado después de 30 segundos de espera!");
-      }, 15000);
+      countdownSeconds = 30; // Resetear el contador
+      gameCountdown = setInterval(() => {
+        countdownSeconds -= 1;
+        ws.broadcast(JSON.stringify({ type: "countdown", value: countdownSeconds }));
+        if (countdownSeconds <= 0) {
+          clearInterval(gameCountdown);
+          gameStarted = true;
+          ws.broadcast(JSON.stringify({ type: "gameStart" }));
+          console.log("El juego ha comenzado después de 30 segundos de espera!");
+        }
+      }, 1000);
     }
 
     // Si se conectan 4 jugadores antes de que termine el contador, inicia el juego de inmediato

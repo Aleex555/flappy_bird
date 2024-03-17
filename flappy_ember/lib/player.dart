@@ -87,4 +87,6 @@ class Player extends SpriteAnimationComponent
   void onLose() {
     gameRef.overlays.add('rankingOverlay');
   }
+
+  
 }

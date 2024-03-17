@@ -20,23 +20,24 @@ class _PlayersScreenState extends State<PlayersScreen> {
   void initState() {
     super.initState();
     widget.game.onPlayersUpdated = _updateConnectedPlayers;
+    widget.game.onTiempo = _tiempo;
     widget.game.onGameStart = () {
-  Navigator.of(context).pushReplacement(
-    MaterialPageRoute(
-      builder: (context) => GameWidget(
-        game: widget.game,
-        overlayBuilderMap: {
-          'rankingOverlay': (context, _) => RankingScreen(game: widget.game),
-        },
-      ),
-    ),
-  );
-};
-
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => GameWidget(
+            game: widget.game,
+            overlayBuilderMap: {
+              'rankingOverlay': (context, _) => RankingScreen(game: widget.game),
+            },
+          ),
+        ),
+      );
+    };
   }
 
   @override
   Widget build(BuildContext context) {
+    AppData appFata = Provider.of<AppData>(context);
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -51,18 +52,23 @@ class _PlayersScreenState extends State<PlayersScreen> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              'Tiempo restante: ${appFata.tiempo} segundos',
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
               children: const [
                 Expanded(
-                  flex: 2, // Ajusta la proporción según sea necesario
+                  flex: 2,
                   child: Text('Nombre',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                 ),
                 Expanded(
                   child: Text('Color',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                 ),
               ],
             ),
@@ -73,20 +79,16 @@ class _PlayersScreenState extends State<PlayersScreen> {
                 return ListView.builder(
                   itemCount: appData.connectedPlayers.length,
                   itemBuilder: (context, index) {
-                    var playerName =
-                        appData.connectedPlayers[index]['name'] as String;
-                    var playerColor =
-                        appData.connectedPlayers[index]['color'] as String;
-                    Color? color = _colorFromName(
-                        playerColor); // Convierte el String a Color.
+                    var playerName = appData.connectedPlayers[index]['name'] as String;
+                    var playerColor = appData.connectedPlayers[index]['color'] as String;
+                    Color? color = _colorFromName(playerColor); // Convierte el String a Color.
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
                         children: [
                           Expanded(
-                            flex: 2, // Ajusta la proporción según sea necesario
-                            child: Text(playerName,
-                                style: TextStyle(fontSize: 18)),
+                            flex: 2,
+                            child: Text(playerName, style: TextStyle(fontSize: 18)),
                           ),
                           Expanded(
                             child: Container(
@@ -127,11 +129,16 @@ class _PlayersScreenState extends State<PlayersScreen> {
   }
 
   void _updateConnectedPlayers(List<dynamic> connectedPlayers) {
-  if (mounted) {
-    Provider.of<AppData>(context, listen: false).setUsuarios(connectedPlayers);
+    if (mounted) {
+      Provider.of<AppData>(context, listen: false).setUsuarios(connectedPlayers);
+    }
   }
-}
 
+  void _tiempo(int tiempo) {
+    if (mounted) {
+      Provider.of<AppData>(context, listen: false).setTiempo(tiempo);
+    }
+  }
 
   Color? _colorFromName(String name) {
     switch (name) {

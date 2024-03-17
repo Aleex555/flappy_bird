@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flame/game.dart';
 import 'package:flappy_ember/game.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +13,7 @@ class AppData with ChangeNotifier {
   String namePlayer = "";
   bool partida = false;
   ConnectionStatus connectionStatus = ConnectionStatus.setupscreen;
+  int tiempo = 30;
 
   void forceNotifyListeners() {
     super.notifyListeners();
@@ -27,6 +26,11 @@ class AppData with ChangeNotifier {
 
   void setUsuarioslost(List<dynamic> value) {
     lostPlayers = value;
+    notifyListeners();
+  }
+
+  void setTiempo(int value) {
+    tiempo = value;
     notifyListeners();
   }
 

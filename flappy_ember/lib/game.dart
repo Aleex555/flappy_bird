@@ -36,7 +36,9 @@ class FlappyEmberGame extends FlameGame
   Map<String, Opponent> opponents = {};
   Function(List<dynamic> connectedPlayers)? onPlayersUpdated;
   Function(List<dynamic> lostPlayers)? onPlayersUpdatedlost;
+  Function(int tiempo)? onTiempo;
   late String name;
+  int tiempo = 30;
 
   @override
   Future<void> onLoad() async {
@@ -167,6 +169,18 @@ class FlappyEmberGame extends FlameGame
             .map((e) => e as Map<String, dynamic>)
             .toList();
         onPlayersUpdatedlost?.call(lostPlayers);
+      for (var lostPlayerData in lostPlayers) {
+        final lostPlayerId = lostPlayerData['id'].toString();
+        if (opponents.containsKey(lostPlayerId)) {
+          final opponentToRemove = opponents.remove(lostPlayerId);
+          remove(opponentToRemove!);
+        }
+      }
+        break;
+
+      case "countdown":
+        tiempo = data['value'] as int;
+        onTiempo?.call(tiempo);
         break;
     }
   }
