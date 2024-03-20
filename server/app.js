@@ -69,7 +69,7 @@
     connectedPlayers.push({ id: id, name: 'Anónimo', color: color });
 
     if (connectedPlayers.length === 1 && !gameStarted) {
-      countdownSeconds = 30; // Resetear el contador
+      countdownSeconds = 15; // Resetear el contador
       gameCountdown = setInterval(() => {
         countdownSeconds -= 1;
         ws.broadcast(JSON.stringify({ type: "countdown", value: countdownSeconds }));
@@ -77,7 +77,7 @@
           clearInterval(gameCountdown);
           gameStarted = true;
           ws.broadcast(JSON.stringify({ type: "gameStart" }));
-          console.log("El juego ha comenzado después de 30 segundos de espera!");
+          console.log("El juego ha comenzado después de 15 segundos de espera!");
         }
       }, 1000);
     }

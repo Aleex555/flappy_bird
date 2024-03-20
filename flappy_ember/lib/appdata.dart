@@ -13,7 +13,7 @@ class AppData with ChangeNotifier {
   String namePlayer = "";
   bool partida = false;
   ConnectionStatus connectionStatus = ConnectionStatus.setupscreen;
-  int tiempo = 30;
+  int tiempo = 15;
 
   void forceNotifyListeners() {
     super.notifyListeners();
